@@ -1,12 +1,12 @@
 from prefect import task, Flow, Parameter
 
-@task
+@task(max_retries=3, retry_delay=timedelta(seconds=10))
 def extract_reference_data():
     # fetch reference data
     ...
     return reference_data
 
-@task
+@task(max_retries=3, retry_delay=timedelta(seconds=10))
 def extract_live_data(airport, radius, ref_data):
     # Get the live aircraft vector data around the given airport (or none)
     area = None
