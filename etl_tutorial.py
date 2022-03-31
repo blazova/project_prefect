@@ -1,4 +1,6 @@
 from prefect import task, Flow, Parameter
+from datetime import timedelta, datetime
+from prefect.schedules import IntervalSchedule
 
 @task(max_retries=3, retry_delay=timedelta(seconds=10))
 def extract_reference_data():
@@ -38,8 +40,12 @@ def load_live_data(transformed_data):
     # save transformed live data to the database
     ...
 
+schedule = IntervalSchedule(
+    start_date=datetime.utcnow() + timedelta(seconds=1),
+    interval=timedelta(minutes=1),
+)
 
-with Flow("Aircraft-ETL") as flow:
+with Flow("Aircraft-ETL", schedule=schedule) as flow:
     airport = Parameter("airport", default="IAD")
     radius = Parameter("radius", default=200)
 
